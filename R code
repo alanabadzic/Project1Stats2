@@ -22,3 +22,44 @@ LMP <- lm(MSRP ~ Year + Make + Engine_HP + Engine_Fuel_Type + Vehicle_Size + cit
 CV(LMP)
 plot(LMP)
 ```
+
+#Objective 2
+```{r, echo=FALSE}
+set.seed(777)
+setsplit = c(train = .6, test = .2, validate = .2)
+
+g = sample(cut(
+  seq(nrow(CarDefault)), 
+  nrow(CarDefault)*cumsum(c(0,setsplit)),
+  labels = names(setsplit)
+))
+
+res = split(CarDefault, g)
+
+```
+
+#Objective 2: Regression Tree Model
+```{r, echo=FALSE}
+library(dplyr)       # data wrangling
+library(rpart)       # performing regression trees
+library(ipred)       # bagging
+library(caret)
+
+RTM <- rpart(
+  formula = MSRP ~ .,
+  data    = res$train,
+  method  = "anova"
+  )
+plotcp(RTM)
+CV(RTM)
+plot(RTM)
+```
+
+#Objective 2: Second Linear Model
+```{r, echo=FALSE}
+library(olsrr)
+library(forecast)
+LMPoly <- lm(MSRP ~ (.)^2 , data = res$train)
+LMPolyStep <- ols_step_backward_p(LMPoly, prem = .05, details = FALSE)
+
+```
