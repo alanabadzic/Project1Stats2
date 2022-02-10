@@ -1,0 +1,24 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+CarDefault <- read_csv("C:/Users/Alex M/Downloads/Project1Details_2/Project1Details/data1.csv")
+View(CarDefault)
+summary(CarDefault)
+names(CarDefault) <- gsub(" ", "_", names(CarDefault))
+
+sapply(CarDefault, function(x) sum(is.na(x)))
+
+CarDefault$Market_Category[CarDefault$Market_Category=="N/A"]<-"other"
+
+```
+
+#OBJECTIVE 1 MODEL
+```{r, echo=FALSE}
+
+LMP <- lm(MSRP ~ Year + Make + Engine_HP + Engine_Fuel_Type + Vehicle_Size + city_mpg + Popularity, CarDefault)
+CV(LMP)
+plot(LMP)
+```
